@@ -1,43 +1,43 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require('graphql-tag');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
 });
 const User = mongoose.model('User', userSchema);
+
 const blogPostSchema = new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, default: Date.now },
 });
-
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
 const typeDefs = gql`
-    type User {
+type User {
     id: ID!
     username: String!
 }
-    type AuthPayload {
+type AuthPayload {
     token: String!
     user: User!
 }
-    type BlogPost {
-        id: ID!
-        title: String!
-        content: String!
-        author: String!
-        date: String!
+type BlogPost {
+    id: ID!
+    title: String!
+    content: String!
+    author: User!  # Updated to User! to match resolver population
+    date: String!
 }
 type Query {
     posts: [BlogPost!]!
     post(id: ID!): BlogPost
+    me: User  # Added to match resolver
 }
-
 type Mutation {
     register(username: String!, password: String!): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
@@ -45,7 +45,7 @@ type Mutation {
     updatePost(id: ID!, title: String, content: String): BlogPost
     deletePost(id: ID!): Boolean!
 }
-    `;
+`;
 
 const resolvers = {
     Query: {
@@ -58,7 +58,7 @@ const resolvers = {
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = new User({ username, password: hashedPassword });
             await user.save();
-            const token = jwt.sign({ id: user._id }, 'YOUR_SECRET_KEY', { expiresIn: '1h' });
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
             return { token, user };
         },
         login: async (_, { username, password }) => {
@@ -66,12 +66,22 @@ const resolvers = {
             if (!user || !(await bcrypt.compare(password, user.password))) {
                 throw new Error('Invalid credentials');
             }
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
             return { token, user };
         },
         createPost: async (_, { title, content }, { user }) => {
             if (!user) throw new Error('Authentication required');
             const post = new BlogPost({ title, content, author: user.id });
             return await post.save();
+        },
+        updatePost: async (_, { id, title, content }, { user }) => {
+            if (!user) throw new Error('Authentication required');
+            const post = await BlogPost.findById(id);
+            if (post.author.toString() !== user.id) throw new Error('Not authorized');
+            const updates = {};
+            if (title) updates.title = title;
+            if (content) updates.content = content;
+            return await BlogPost.findByIdAndUpdate(id, updates, { new: true }).populate('author');
         },
         deletePost: async (_, { id }, { user }) => {
             if (!user) throw new Error('Authentication required');
@@ -83,11 +93,10 @@ const resolvers = {
     },
 };
 
-
 function context({ req }) {
     const token = req.headers.authorization?.replace('Bearer ', '') || '';
     try {
-        const decoded = jwt.verify(token, 'YOUR_SECRET_KEY');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return { user: decoded };
     } catch {
         return { user: null };
