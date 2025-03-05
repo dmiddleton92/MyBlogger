@@ -32,19 +32,20 @@ type Mutation {
 
     const resolvers = {
         Query: {
-            posts: async () => {
-            posts: async (__, { id }) => await BlogPost.findById(id),
+            posts: async () => await BlogPost.find(),
+            post: async (_, { id }) => await BlogPost.findById(id),
+        },
+        Mutation: {
+            createPost: async (_, { title, content, author }) => {
+                const post = new BlogPost({ title, content, author });
+                return await post.save();
             },
-            Mutation: {
-                createPost: async (__m { title, content, author }) => {
-                    const post = new BlogPost({ title, content, author });
-                    return await post.save();
-                },
-                updatePost: async (__, { id, title, content, author }) => {
-                    if (title) updates.title = title;
-                    if (content) updates.content = content;
-                    if (author) updates.author = author;
-                    return await BlogPost.findByIdAndUpdate(id, updates, { new: true });    
+            updatePost: async (_, { id, title, content, author }) => {
+                const updates = {};
+                if (title) updates.title = title;
+                if (content) updates.content = content;
+                if (author) updates.author = author;
+                return await BlogPost.findByIdAndUpdate(id, updates, { new: true });    
             },
             deletePost: async (_, { id }) => {
                 await BlogPost.findByIdAndDelete(id);
