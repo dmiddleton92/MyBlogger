@@ -4,7 +4,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 import Register from './Register.jsx';
-import Login from './Login.jsx';
+// import Login from './Login.jsx';
 
 
 const client = new ApolloClient({
