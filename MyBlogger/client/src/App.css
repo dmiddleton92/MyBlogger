@@ -1,9 +1,88 @@
-#register page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+#register-page {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
 
+#register-header {
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#register-nav {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#register-nav a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+#register-nav a:hover {
+  text-decoration: underline;
+}
+
+#register-content {
+  display: flex;
+  flex-direction: column;
+}
+
+#register-title {
+  font-size: 1.5rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+#register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#register-username-input,
+#register-email-input,
+#register-password-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+#register-username-input:focus,
+#register-email-input:focus,
+#register-password-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#register-submit-button {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#register-submit-button:hover {
+  background-color: #218838;
+}
+
+#register-error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+}
 }
 
 
