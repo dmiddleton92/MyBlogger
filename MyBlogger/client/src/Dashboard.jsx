@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
-import '.app.css';
+import './App.css';
+
 
 const GET_POSTS = gql`
     query GetPosts {
@@ -115,9 +116,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
-    )
-
-
-
-
-}
+    
