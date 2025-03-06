@@ -6,11 +6,30 @@ import App from './App.jsx';
 import Login from './Login.jsx';
 import Dashboard from './Dashboard.jsx';
 
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('token');
+  console.log('Sending token:', token);
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+
 const client = new ApolloClient({
   uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache(),
-  headers: {
-    authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+  request: (operation) => {
+    const token = localStorage.getItem('token');
+    console.log('Sending token:', token); // Debug
+    operation.setContext({
+      headers: {
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    });
   },
 });
 
