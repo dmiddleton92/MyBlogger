@@ -83,7 +83,146 @@
   margin-top: 10px;
   text-align: center;
 }
+
+#dashboard-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
 }
+
+#dashboard-header {
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#dashboard-signout-button {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#dashboard-signout-button:hover {
+  background-color: #c82333;
+}
+
+#dashboard-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#dashboard-title-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+#dashboard-title-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#dashboard-content-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 100px;
+  outline: none;
+}
+
+#dashboard-content-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#dashboard-create-button {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#dashboard-create-button:hover {
+  background-color: #218838;
+}
+
+#dashboard-posts-container {
+  margin-top: 20px;
+}
+
+#dashboard-post-[id] { /* Note: Use classes for dynamic posts in practice */
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+#dashboard-post-title-[id] {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+#dashboard-post-content-[id] {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+#dashboard-post-meta-[id] {
+  font-size: 0.9rem;
+  color: #777;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+#dashboard-delete-button-[id] {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#dashboard-delete-button-[id]:hover {
+  background-color: #c82333;
+}
+
+#dashboard-loading,
+#dashboard-error,
+#dashboard-no-data,
+#dashboard-no-posts {
+  font-size: 1rem;
+  text-align: center;
+  margin: 10px 0;
+}
+
+#dashboard-error {
+  color: red;
+}
+
 
 
 
