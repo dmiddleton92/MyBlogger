@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true},
     password: { type: String, required: true },
 });
 const User = mongoose.model('User', userSchema);
@@ -21,6 +22,7 @@ const typeDefs = gql`
 type User {
     id: ID!
     username: String!
+    email: String!
 }
 type AuthPayload {
     token: String!
@@ -30,13 +32,13 @@ type BlogPost {
     id: ID!
     title: String!
     content: String!
-    author: User!  # Updated to User! to match resolver population
+    author: User!  
     date: String!
 }
 type Query {
     posts: [BlogPost!]!
     post(id: ID!): BlogPost
-    me: User  # Added to match resolver
+    me: User  
 }
 type Mutation {
     register(username: String!, password: String!): AuthPayload!
