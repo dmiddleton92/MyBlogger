@@ -32,16 +32,16 @@ type BlogPost {
     id: ID!
     title: String!
     content: String!
-    author: User!  
+    author: User!
     date: String!
 }
 type Query {
     posts: [BlogPost!]!
     post(id: ID!): BlogPost
-    me: User  
+    me: User
 }
 type Mutation {
-    register(username: String!, password: String!): AuthPayload!
+    register(username: String!, email: String!, password: String!): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
     createPost(title: String!, content: String!): BlogPost!
     updatePost(id: ID!, title: String, content: String): BlogPost
@@ -56,51 +56,43 @@ const resolvers = {
         me: async (_, __, { user }) => (user ? await User.findById(user.id) : null),
     },
     Mutation: {
-        Query: {
-            posts: async () => await BlogPost.find().populate('author'),
-            post: async (_, { id }) => await BlogPost.findById(id).populate('author'),
-            me: async (_, __, { user }) => (user ? await User.findById(user.id) : null),
+        register: async (_, { username, email, password }) => {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = new User({ username, email, password: hashedPassword });
+            await user.save();
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return { token, user };
         },
-        Mutation: {
-            register: async (_, { username, email, password }) => {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                const user = new User({ username, email, password: hashedPassword });
-                await user.save();
-                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return { token, user };
-            },
-            login: async (_, { username, password }) => {
-                const user = await User.findOne({ username });
-                if (!user || !(await bcrypt.compare(password, user.password))) {
-                    throw new Error('Invalid credentials');
-                }
-                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return { token, user };
-            },
-            createPost: async (_, { title, content }, { user }) => {
-                if (!user) throw new Error('Authentication required');
-                const post = new BlogPost({ title, content, author: user.id });
-                return await post.save();
-            },
-            updatePost: async (_, { id, title, content }, { user }) => {
-                if (!user) throw new Error('Authentication required');
-                const post = await BlogPost.findById(id);
-                if (post.author.toString() !== user.id) throw new Error('Not authorized');
-                const updates = {};
-                if (title) updates.title = title;
-                if (content) updates.content = content;
-                return await BlogPost.findByIdAndUpdate(id, updates, { new: true }).populate('author');
-            },
-            deletePost: async (_, { id }, { user }) => {
-                if (!user) throw new Error('Authentication required');
-                const post = await BlogPost.findById(id);
-                if (post.author.toString() !== user.id) throw new Error('Not authorized');
-                await BlogPost.findByIdAndDelete(id);
-                return true;
-            },
+        login: async (_, { username, password }) => {
+            const user = await User.findOne({ username });
+            if (!user || !(await bcrypt.compare(password, user.password))) {
+                throw new Error('Invalid credentials');
+            }
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return { token, user };
         },
-    };
-
+        createPost: async (_, { title, content }, { user }) => {
+            if (!user) throw new Error('Authentication required');
+            const post = new BlogPost({ title, content, author: user.id });
+            return await post.save();
+        },
+        updatePost: async (_, { id, title, content }, { user }) => {
+            if (!user) throw new Error('Authentication required');
+            const post = await BlogPost.findById(id);
+            if (post.author.toString() !== user.id) throw new Error('Not authorized');
+            const updates = {};
+            if (title) updates.title = title;
+            if (content) updates.content = content;
+            return await BlogPost.findByIdAndUpdate(id, updates, { new: true }).populate('author');
+        },
+        deletePost: async (_, { id }, { user }) => {
+            if (!user) throw new Error('Authentication required');
+            const post = await BlogPost.findById(id);
+            if (post.author.toString() !== user.id) throw new Error('Not authorized');
+            await BlogPost.findByIdAndDelete(id);
+            return true;
+        },
+    },
 };
 
 function context({ req }) {
