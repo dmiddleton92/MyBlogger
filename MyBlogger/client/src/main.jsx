@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 // import App from './App.css';
 import Register from './Register.jsx';
-// import Login from './Login.jsx';
+import Login from './Login.jsx';
 
 
 const client = new ApolloClient({
@@ -23,7 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
     </ApolloProvider>
